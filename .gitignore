@@ -66,6 +66,7 @@ out/
 
 # dotenv environment variables file
 .env
+.env*.local
 
 # dataconnect generated files
 .dataconnect
