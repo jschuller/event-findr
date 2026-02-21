@@ -15,6 +15,21 @@ function createId() {
   return `evt-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
 }
 
+function renderMarkdown(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/^### (.+)$/gm, "<h5>$1</h5>")
+    .replace(/^## (.+)$/gm, "<h4>$1</h4>")
+    .replace(/^# (.+)$/gm, "<h3>$1</h3>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/^- (.+)$/gm, "<li>$1</li>")
+    .replace(/((?:<li>.*<\/li>\n?)+)/g, "<ul>$1</ul>")
+    .replace(/\n{2,}/g, "<br/><br/>")
+    .replace(/\n/g, "<br/>");
+}
+
 const EVENT_COLORS = [
   "#ff7a18", // accent orange
   "#157a6e", // accent teal
@@ -139,6 +154,7 @@ export default function CalendarMock() {
         color: EVENT_COLORS[0],
       },
     ]);
+    setDate(new Date());
   }
 
   return (
@@ -158,7 +174,10 @@ export default function CalendarMock() {
         </form>
         {chatResponse && (
           <div className="chat-response">
-            <div className="chat-response-text">{chatResponse}</div>
+            <div
+              className="chat-response-text"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(chatResponse) }}
+            />
             <button className="secondary" onClick={addBlankEvent}>
               + Add event to calendar
             </button>
