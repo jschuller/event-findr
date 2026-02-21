@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { runAiriaPipeline } from "../lib/airiaClient";
 
 const BasicScheduler = dynamic(
   () => import("calendarkit-basic").then((mod) => mod.BasicScheduler),
@@ -19,6 +20,13 @@ export default function CalendarMock() {
   const [events, setEvents] = useState([]);
   const [view, setView] = useState("week");
   const [date, setDate] = useState(new Date());
+
+  useEffect(() => {
+    window.runAiriaPipeline = runAiriaPipeline;
+    return () => {
+      delete window.runAiriaPipeline;
+    };
+  }, []);
 
   return (
     <section className="calendar-section">
