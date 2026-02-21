@@ -16,7 +16,7 @@ jobs:
       - run: npm install --prefix functions
       - run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_EVENT_FINDR_2026 }}' > "$RUNNER_TEMP/sa.json"
-          npx firebase-tools deploy --only functions --project event-findr-2026
+          npx firebase-tools deploy --only functions --project event-findr-2026 --force
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
       - uses: FirebaseExtended/action-hosting-deploy@v0
