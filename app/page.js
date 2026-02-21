@@ -107,6 +107,15 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="hero-image reveal" style={{ "--delay": "100ms" }}>
+        <img
+          src="/hero-event.webp"
+          alt="A bustling tech hackathon with developers collaborating at tables, colorful banners, and a city skyline through floor-to-ceiling windows"
+          width={1920}
+          height={1080}
+        />
+      </div>
+
       <CalendarMock />
 
       <section className="section split">
