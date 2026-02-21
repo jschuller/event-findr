@@ -648,6 +648,66 @@ button {
   align-self: flex-start;
 }
 
+.chat-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--stroke);
+  padding-top: 12px;
+}
+
+.chat-events-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.chat-add-all {
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
+.chat-event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+}
+
+.chat-event-row div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.chat-event-meta {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.chat-event-row .secondary {
+  white-space: nowrap;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+.chat-event-row .secondary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.chat-add-all:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;

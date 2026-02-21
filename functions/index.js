@@ -12,11 +12,26 @@ exports.chat = onRequest(async (req, res) => {
   }
 
   const { userInput } = req.body;
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const prompt = `Today is ${today}. The user is located in New York City.
+
+${userInput}
+
+IMPORTANT: After your response, include a fenced code block labeled "json" with an array of events you mentioned. Each event must have: "title", "date" (YYYY-MM-DD), "startTime" (HH:MM, 24h), and "endTime" (HH:MM, 24h). If the exact time is unknown, estimate a reasonable time. Example:
+\`\`\`json
+[{"title":"Event Name","date":"2026-02-22","startTime":"14:00","endTime":"16:00"}]
+\`\`\``;
 
   const response = await fetch(AIRIA_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-API-KEY": AIRIA_KEY },
-    body: JSON.stringify({ userInput, asyncOutput: false }),
+    body: JSON.stringify({ userInput: prompt, asyncOutput: false }),
   });
 
   const data = await response.json();

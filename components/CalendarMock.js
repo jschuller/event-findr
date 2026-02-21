@@ -30,6 +30,28 @@ function renderMarkdown(text) {
     .replace(/\n/g, "<br/>");
 }
 
+function parseEventsFromResponse(text) {
+  const match = text.match(/```json\s*([\s\S]*?)```/);
+  if (!match) return { display: text, parsedEvents: [] };
+
+  const display = text.replace(/```json\s*[\s\S]*?```/, "").trim();
+  let parsedEvents = [];
+  try {
+    const raw = JSON.parse(match[1].trim());
+    parsedEvents = (Array.isArray(raw) ? raw : []).map((e) => {
+      const [y, m, d] = (e.date || "").split("-").map(Number);
+      const [sh, sm] = (e.startTime || "12:00").split(":").map(Number);
+      const [eh, em] = (e.endTime || "13:00").split(":").map(Number);
+      const start = new Date(y, m - 1, d, sh, sm);
+      const end = new Date(y, m - 1, d, eh, em);
+      return { title: e.title || "Event", start, end };
+    });
+  } catch {
+    // JSON parse failed — just show the text
+  }
+  return { display, parsedEvents };
+}
+
 const EVENT_COLORS = [
   "#ff7a18", // accent orange
   "#157a6e", // accent teal
@@ -112,14 +134,18 @@ export default function CalendarMock() {
   const [date, setDate] = useState(new Date());
 
   const [chatInput, setChatInput] = useState("");
-  const [chatResponse, setChatResponse] = useState(null);
+  const [chatDisplay, setChatDisplay] = useState(null);
+  const [chatParsedEvents, setChatParsedEvents] = useState([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [addedIds, setAddedIds] = useState(new Set());
 
   async function handleChatSubmit(e) {
     e.preventDefault();
     if (!chatInput.trim() || chatLoading) return;
     setChatLoading(true);
-    setChatResponse(null);
+    setChatDisplay(null);
+    setChatParsedEvents([]);
+    setAddedIds(new Set());
 
     try {
       const res = await fetch("/api/chat", {
@@ -128,33 +154,48 @@ export default function CalendarMock() {
         body: JSON.stringify({ userInput: chatInput.trim() }),
       });
       const data = await res.json();
-      setChatResponse(data.result || JSON.stringify(data, null, 2));
+      const raw = data.result || JSON.stringify(data, null, 2);
+      const { display, parsedEvents } = parseEventsFromResponse(raw);
+      setChatDisplay(display);
+      setChatParsedEvents(parsedEvents);
     } catch (err) {
-      setChatResponse("Error: " + err.message);
+      setChatDisplay("Error: " + err.message);
     } finally {
       setChatLoading(false);
     }
   }
 
-  function addBlankEvent() {
-    const now = new Date();
-    const start = new Date(now);
-    start.setMinutes(0, 0, 0);
-    start.setHours(start.getHours() + 1);
-    const end = new Date(start);
-    end.setHours(end.getHours() + 1);
-
+  function addEventToCalendar(idx) {
+    const evt = chatParsedEvents[idx];
+    if (!evt) return;
     setEvents((current) => [
       ...current,
       {
         id: createId(),
-        title: "New Event",
-        start,
-        end,
-        color: EVENT_COLORS[0],
+        title: evt.title,
+        start: evt.start,
+        end: evt.end,
+        color: EVENT_COLORS[idx % EVENT_COLORS.length],
       },
     ]);
-    setDate(new Date());
+    setAddedIds((prev) => new Set(prev).add(idx));
+    setDate(evt.start);
+  }
+
+  function addAllEvents() {
+    const newEvents = chatParsedEvents
+      .filter((_, i) => !addedIds.has(i))
+      .map((evt, i) => ({
+        id: createId(),
+        title: evt.title,
+        start: evt.start,
+        end: evt.end,
+        color: EVENT_COLORS[i % EVENT_COLORS.length],
+      }));
+    if (newEvents.length === 0) return;
+    setEvents((current) => [...current, ...newEvents]);
+    setAddedIds(new Set(chatParsedEvents.map((_, i) => i)));
+    setDate(chatParsedEvents[0].start);
   }
 
   return (
@@ -172,15 +213,47 @@ export default function CalendarMock() {
             {chatLoading ? "Searching…" : "Search"}
           </button>
         </form>
-        {chatResponse && (
+        {chatDisplay && (
           <div className="chat-response">
             <div
               className="chat-response-text"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(chatResponse) }}
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(chatDisplay) }}
             />
-            <button className="secondary" onClick={addBlankEvent}>
-              + Add event to calendar
-            </button>
+            {chatParsedEvents.length > 0 && (
+              <div className="chat-events-list">
+                <div className="chat-events-header">
+                  <strong>{chatParsedEvents.length} event{chatParsedEvents.length !== 1 ? "s" : ""} found</strong>
+                  <button
+                    className="cta chat-add-all"
+                    onClick={addAllEvents}
+                    disabled={addedIds.size === chatParsedEvents.length}
+                  >
+                    {addedIds.size === chatParsedEvents.length ? "All added" : "+ Add all to calendar"}
+                  </button>
+                </div>
+                {chatParsedEvents.map((evt, i) => (
+                  <div key={i} className="chat-event-row">
+                    <div>
+                      <strong>{evt.title}</strong>
+                      <span className="chat-event-meta">
+                        {evt.start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                        {" "}
+                        {evt.start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                        {" – "}
+                        {evt.end.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <button
+                      className="secondary"
+                      onClick={() => addEventToCalendar(i)}
+                      disabled={addedIds.has(i)}
+                    >
+                      {addedIds.has(i) ? "Added" : "+ Add"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
