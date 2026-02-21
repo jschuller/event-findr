@@ -1,4 +1,5 @@
 import FirebaseInit from "../components/FirebaseInit";
+import CalendarMock from "../components/CalendarMock";
 
 export default function Home() {
   return (
@@ -105,6 +106,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <CalendarMock />
 
       <section className="section split">
         <div className="panel reveal" style={{ "--delay": "120ms" }}>

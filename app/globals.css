@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --bg: #f7f1e8;
   --surface: #fff9f1;
@@ -128,6 +132,15 @@ button {
   text-decoration: none;
   color: var(--muted);
   font-size: 0.95rem;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.ghost:hover {
+  border-color: var(--stroke);
 }
 
 .cta,
@@ -350,6 +363,125 @@ button {
   gap: 20px;
 }
 
+.calendar-section {
+  padding: 56px 0;
+}
+
+.calendar-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.calendar-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meta-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--stroke);
+  font-size: 0.85rem;
+}
+
+.calendar-shell {
+  background: #fffdf7;
+  border-radius: 24px;
+  border: 1px solid var(--stroke);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  --background: 32 100% 98%;
+  --foreground: 24 26% 12%;
+  --card: 34 100% 97%;
+  --card-foreground: 24 26% 12%;
+  --primary: 24 96% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 32 38% 92%;
+  --secondary-foreground: 24 22% 18%;
+  --muted: 32 32% 93%;
+  --muted-foreground: 24 10% 40%;
+  --accent: 32 38% 92%;
+  --accent-foreground: 24 22% 18%;
+  --destructive: 0 72% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 28 20% 85%;
+  --ring: 24 96% 55%;
+}
+
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.chip {
+  border: 1px solid var(--stroke);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: var(--ink);
+  color: #fff8f0;
+  border-color: transparent;
+}
+
+.calendar-footer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.calendar-footer code {
+  background: rgba(21, 122, 110, 0.12);
+  color: var(--accent-2);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.event-list {
+  margin-top: 28px;
+  display: grid;
+  gap: 16px;
+}
+
+.event-list-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
 .cta-band h2 {
   color: #fff6e8;
 }
@@ -391,6 +523,15 @@ button {
     flex-direction: column;
     gap: 8px;
   }
+
+  .calendar-intro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .calendar-toolbar {
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 600px) {
@@ -406,6 +547,10 @@ button {
   .cta-band {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .calendar-shell {
+    padding: 14px;
   }
 }
 
